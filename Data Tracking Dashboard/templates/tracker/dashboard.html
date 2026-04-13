@@ -1,0 +1,126 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">API Health Monitoring Dashboard</h1>
+        <p class="text-secondary mb-0">Automatic health checks every 5 seconds</p>
+    </div>
+    <div class="text-end">
+        <div class="small text-secondary">Last refresh</div>
+        <div class="fw-semibold">{{ last_refresh_time }}</div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="fw-semibold me-2">Error Simulation:</span>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'tracker:dashboard' %}">No Simulation</a>
+            <a class="btn btn-sm btn-outline-warning" href="{% url 'tracker:dashboard' %}?simulate_error=posts">Simulate Posts Error</a>
+            <a class="btn btn-sm btn-outline-warning" href="{% url 'tracker:dashboard' %}?simulate_error=users">Simulate Users Error</a>
+            <a class="btn btn-sm btn-outline-danger" href="{% url 'tracker:dashboard' %}?simulate_error=all">Simulate All Errors</a>
+            {% if simulate_error %}
+            <span class="badge text-bg-warning">Active: {{ simulate_error }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% for alert in alerts %}
+<div class="alert alert-{{ alert.type }} alert-dismissible fade show" role="alert">
+    {{ alert.message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Total APIs Monitored</div>
+                <div class="display-6 fw-bold">{{ api_results|length }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Healthy APIs</div>
+                <div class="display-6 fw-bold text-success">{{ healthy_count }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">Failing APIs</div>
+                <div class="display-6 fw-bold text-danger">{{ error_count }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-0 pt-3">
+        <h2 class="h5 mb-0">AI Insight</h2>
+    </div>
+    <div class="card-body">
+        <p class="mb-2">{{ ai_insight }}</p>
+        {% if anomaly_notes %}
+        <ul class="mb-0">
+            {% for note in anomaly_notes %}
+            <li>{{ note }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 pt-3">
+        <h2 class="h5 mb-0">API Status</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>API Name</th>
+                    <th>Status</th>
+                    <th>Record Count</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for api in api_results %}
+                <tr>
+                    <td>
+                        <div class="fw-semibold">{{ api.name }}</div>
+                        <div class="small text-secondary">{{ api.url }}</div>
+                    </td>
+                    <td>
+                        {% if api.status == 'OK' %}
+                        <span class="badge rounded-pill text-bg-success">OK</span>
+                        {% else %}
+                        <span class="badge rounded-pill text-bg-danger">ERROR</span>
+                        {% endif %}
+                        {% if api.is_simulated %}
+                        <span class="badge rounded-pill text-bg-warning ms-1">SIMULATED</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ api.record_count }}</td>
+                    <td>{{ api.last_updated }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        window.location.reload();
+    }, 5000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+{% endblock %}

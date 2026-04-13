@@ -1,0 +1,56 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="topbar">
+    <h1>Add Data Entry</h1>
+    <div class="actions">
+        <a class="button secondary" href="{% url 'tracker:dashboard' %}">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="card">
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+
+        <div>
+            <label for="{{ form.date.id_for_label }}">Date</label>
+            {{ form.date }}
+            {{ form.date.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.title.id_for_label }}">Title</label>
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.category.id_for_label }}">Category</label>
+            {{ form.category }}
+            {{ form.category.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.value.id_for_label }}">Value</label>
+            {{ form.value }}
+            {{ form.value.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.status.id_for_label }}">Status</label>
+            {{ form.status }}
+            {{ form.status.errors }}
+        </div>
+
+        <div class="full">
+            <label for="{{ form.notes.id_for_label }}">Notes</label>
+            {{ form.notes }}
+            {{ form.notes.errors }}
+        </div>
+
+        <div class="full actions">
+            <button type="submit" class="button">Save Entry</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
